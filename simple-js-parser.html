@@ -9,8 +9,10 @@
     />
     <link rel="stylesheet" href="simple-js-parser.css" />
   </head>
+
   <body>
-    <div class="form-label-group">
+    <div class="form-group">
+      <label for="inputEmail">Template Input</label>
       <input
         type="text"
         name="templateInput"
@@ -18,23 +20,18 @@
         class="form-control"
         value="Its {{#if isWeekday }}not {{#end}}the weekend!"
       />
-      <label for="inputEmail">Template Input</label>
     </div>
-
-    <div class="form-label-group">
-      <input
-        type="text"
-        name="yamlInput"
-        id="yamlInput"
-        class="form-control"
-        value="isWeekday: true"
-      />
+    <div class="form-group">
       <label for="inputPassword">Yaml Input</label>
+      <textarea name="yamlInput" id="yamlInput" class="form-control">
+isWeekday: true</textarea
+      >
     </div>
 
-    <!-- <div class="form-label-group">
+    <div class="form-group">
       <br />
       <br />
+      <label for="inputEmail">Template Input</label>
       <input
         type="text"
         name="templateInput"
@@ -42,18 +39,13 @@
         class="form-control"
         value="Hello {{name}}"
       />
-      <label for="inputEmail">Template Input</label>
     </div>
-    <div class="form-label-group">
-      <input
-        type="text"
-        name="yamlInput"
-        id="yamlInput"
-        class="form-control"
-        value="name: User1"
-      />
+    <div class="form-group">
       <label for="inputPassword">Yaml Input</label>
-    </div> -->
+      <textarea name="yamlInput" id="yamlInput" class="form-control">
+name: User1</textarea
+      >
+    </div>
 
     <button
       class="btn btn-lg btn-primary btn-block"

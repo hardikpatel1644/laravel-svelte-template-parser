@@ -55,24 +55,23 @@
     <h1 class="h3 mb-3 font-weight-normal">PHP-Svelte-Yaml-Template APP</h1>
   </div>
 
-  <div class="form-label-group">
+  <div class="form-group">
+    <label for="templateInput">Template Input</label>
     <input
       type="text"
       name="templateInput"
       class="form-control"
       bind:value={templateInput}
     />
-    <label for="inputEmail">Template Input</label>
   </div>
 
-  <div class="form-label-group">
-    <input
-      type="text"
+  <div class="form-group">
+    <label for="yamlInput">Yaml Input</label>
+    <textarea
       name="yamlInput"
       class="form-control"
       bind:value={yamlInput}
     />
-    <label for="inputPassword">Yaml Input</label>
   </div>
 
   <button class="btn btn-lg btn-primary btn-block" type="submit"
@@ -89,6 +88,5 @@
   <h4 class="text-center alert-success">Result</h4>
   {#if result}
     <p class="text-center alert-success">{@html result }</p>
-
   {/if}
 </form>
