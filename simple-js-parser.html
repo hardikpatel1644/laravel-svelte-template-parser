@@ -1,0 +1,166 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/build/bundle.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="simple-js-parser.css" />
+  </head>
+  <body>
+    <div class="form-label-group">
+      <input
+        type="text"
+        name="templateInput"
+        id="templateInput"
+        class="form-control"
+        value="Its {{#if isWeekday }}not {{#end}}the weekend!"
+      />
+      <label for="inputEmail">Template Input</label>
+    </div>
+
+    <div class="form-label-group">
+      <input
+        type="text"
+        name="yamlInput"
+        id="yamlInput"
+        class="form-control"
+        value="isWeekday: true"
+      />
+      <label for="inputPassword">Yaml Input</label>
+    </div>
+
+    <!--
+    <input
+      type="text"
+      name="templateInput"
+      id="templateInput"
+       class="form-control"
+      value="Hello {{name}}"
+    />
+    <br />
+    <input type="text" name="yamlInput" id="yamlInput"
+     class="form-control"
+    value="name: User1" />
+        <label for="inputPassword">Yaml Input</label>
+  </div>
+    <br />
+    -->
+    <button
+      class="btn btn-lg btn-primary btn-block"
+      onclick="displayResult();return false;"
+    >
+      Display Result
+    </button>
+    <hr />
+    <h4 class="text-center">Result</h4>
+    <p class="text-center alert-success" id="result"></p>
+
+    <script type="text/javascript">
+      function displayResult() {
+        //sendRequest();
+
+        let templateInput = document.getElementById("templateInput").value;
+        let yamlInput = document.getElementById("yamlInput").value;
+        let yamlInputArr = yamlInput.split(":");
+
+        let parsedVal = "";
+        if (
+          yamlInputArr[1].trim() == "true" ||
+          yamlInputArr[1].trim() == "false"
+        ) {
+          parsedVal = yamlInputArr[1].trim() == "true";
+        } else {
+          parsedVal = '"' + yamlInputArr[1].trim() + '"';
+        }
+        console.log(typeof parsedVal);
+
+        let yamlInputObj =
+          '{"' + yamlInputArr[0].trim() + '":' + parsedVal + "}";
+        console.log("yamlInputObj", JSON.parse(yamlInputObj));
+        let result = TemplateEngine(templateInput, JSON.parse(yamlInputObj));
+        document.getElementById("result").innerHTML = result;
+      }
+      var TemplateEngine = function (html, options) {
+        var re = /{{(.+?)}}/g,
+          reExp =
+            /(^( )?(var|if|end|#if|#end|for|else|switch|case|break|{|}|;))(.*)?/g,
+          code = "with(obj) { var r=[];\n",
+          cursor = 0,
+          result,
+          match;
+        var add = function (line, js) {
+          if (js) {
+            let matchArr1 = line.trim().split(" ");
+            if (matchArr1.length > 1) {
+              if (matchArr1[0] == "#if") {
+                matchArr1[0] = "if(";
+                matchArr1[1] = matchArr1[1] + "){";
+                line = matchArr1.join("");
+              }
+            }
+
+            if (matchArr1[0] == "#end") {
+              matchArr1[0] = "}";
+              line = "}";
+            }
+          }
+
+          js
+            ? (code += line.match(reExp)
+                ? line + "\n"
+                : "r.push(" + line + ");\n")
+            : (code +=
+                line != ""
+                  ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n'
+                  : "");
+          return add;
+        };
+        while ((match = re.exec(html))) {
+          add(html.slice(cursor, match.index))(match[1], true);
+          cursor = match.index + match[0].length;
+        }
+        add(html.substr(cursor, html.length - cursor));
+        code = (code + 'return r.join(""); }').replace(/[\r\t\n]/g, " ");
+        try {
+          result = new Function("obj", code).apply(options, [options]);
+        } catch (err) {
+          result = "An error occurred";
+        }
+        return result;
+      };
+      var template1 =
+        "It's " + "{{#if isWeekday }}" + "not" + "{{#end}} the weekend!";
+      console.log(
+        TemplateEngine(template1, {
+          isWeekday: true,
+        })
+      );
+
+      var template2 = "Hello, my name is {{name}}";
+      console.log(
+        TemplateEngine(template2, {
+          name: "User1",
+        })
+      );
+
+      function sendRequest() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8000/api/parse", true);
+        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "<origin> | *");
+        xhr.onload = function () {
+          console.log(this.responseText);
+        };
+        xhr.send(
+          JSON.stringify({
+            templateInput: "{{#if isWeekday }}not {{#end}}the weekend!",
+            yamlInput: "isWeekday: true",
+          })
+        );
+      }
+    </script>
+  </body>
+</html>
